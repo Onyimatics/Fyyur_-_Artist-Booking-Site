@@ -63,7 +63,9 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
+  """
+  TODO: replace with real venues data.
+  """
   try:
     result1 = Venue.query.add_columns(Venue.state, Venue.city).all()
     result2 = Venue.query.add_columns(Venue.id, Venue.name).all()
@@ -89,9 +91,11 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  """
+  TODO: This implements search on artists with partial string search. Ensure it is case-insensitive.
+  seach for Hop should return "The Musical Hop".
+  search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  """
   try:
     search_term = request.form.get('search_term')
     data = Venue.query.filter(Venue.name.ilike('%' + search_term + '%')).all()
@@ -106,8 +110,10 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
+  """
+  This shows the venue page with the given venue_id
+  TODO: replace with real venue data from the venues table, using venue_id
+  """
   try:
     result_venue = Venue.query.filter(Venue.id == venue_id).first()
     result_past_shows_count = Show.query.join(Venue, Venue.id==Show.venue_id ).filter(Show.start_time < date.today()).count()
@@ -156,6 +162,9 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
+  """
+  THis creates the venue of the music show
+  """
   try:
     name = request.form.get('name')
     city = request.form.get('city')
@@ -201,18 +210,34 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  """
+  TODO: Complete this endpoint for taking a venue_id, and using
+  SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
 
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
+  clicking that button delete it from the db then redirect the user to the homepage
+  """
+  try:
+    Venue.query.filter_by(id=venue_id).delete()
+    db.session.commit()
+    # on successful delete, flash success
+    flash('Successfully deleted')
+  except:
+    db.session.rollback()
+    # TODO: on unsuccessful delete, flash an error instead.
+    flash('Oops! Unable to delete')
+    return
+  finally:
+    db.session.close()
+  return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
+  """
+  TODO: replace with real data returned from querying the database
+  """
   try:
     data = Artist.query.add_columns(Artist.id, Artist.name).all()
   except:
@@ -222,9 +247,11 @@ def artists():
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
-  # search for "band" should return "The Wild Sax Band".
+  """
+  TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
+  seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
+  search for "band" should return "The Wild Sax Band".
+  """
   try:
     search_term = request.form.get('search_term')
     data = Artist.query.filter(Artist.name.ilike('%' + search_term + '%')).all()
@@ -241,8 +268,10 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
+  """
+  shows the venue page with the given venue_id
+  TODO: replace with real venue data from the venues table, using venue_id
+  """
   try:
     result_artist = Artist.query.filter(Artist.id == artist_id).first()
     result_past_shows_count = Show.query.join(Artist, Artist.id==Show.artist_id ).filter(Show.start_time < date.today()).count()
@@ -286,6 +315,9 @@ def show_artist(artist_id):
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
+  """
+  This edits and updates the artist details
+  """
   form = ArtistForm()
   artist={
     "id": 4,
@@ -305,8 +337,10 @@ def edit_artist(artist_id):
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-  # TODO: take values from the form submitted, and update existing
-  # artist record with ID <artist_id> using the new attributes
+  """
+  TODO: take values from the form submitted, and update existing
+  artist record with ID <artist_id> using the new attributes
+  """
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -332,9 +366,11 @@ def edit_venue(venue_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-  # TODO: take values from the form submitted, and update existing
-  # venue record with ID <venue_id> using the new attributes
+  """
+  TODO: take values from the form submitted, and update existing
+  venue record with ID <venue_id> using the new attributes
   return redirect(url_for('show_venue', venue_id=venue_id))
+  """
 
 #  Create Artist
 #  ----------------------------------------------------------------
@@ -346,6 +382,9 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
+  """
+  This creates and submits the artist form
+  """
   try:
     name = request.form.get('name')
     city = request.form.get('city')
@@ -391,9 +430,11 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
+  """
+  This displays list of shows at /shows
+  TODO: replace with real venues data.
+  num_shows should be aggregated based on number of upcoming shows per venue.
+  """
   try:
     data =  Show.query.join(Venue, Venue.id==Show.venue_id)\
     .join(Artist, Artist.id==Show.artist_id)\
@@ -404,16 +445,21 @@ def shows():
     return
   finally:
     db.session.close()
-  return render_template('pages/shows.html', shows=data)
+  return render_template('pages/home.html')
 
 @app.route('/shows/create')
 def create_shows():
-  # renders form. do not touch.
+  """
+  This renders a show form..
+  """
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
+  """
+  This creates and submits the show form
+  """
   try:
     venue_id = request.form.get('venue_id')
     artist_id = request.form.get('artist_id')
